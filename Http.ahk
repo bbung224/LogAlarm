@@ -1,6 +1,7 @@
 http(method, url, oData := "", oHeaders := "") {
 	static whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 	;whr.SetProxy(2, "127.0.0.1:8888")
+	whr.SetTimeouts(0,30000,30000,120000)
 	whr.Open(method, url, true)
 
 	for k, v in oHeaders {
@@ -21,13 +22,16 @@ http(method, url, oData := "", oHeaders := "") {
 	}
 
 	whr.Send(sData)
-	whr.WaitForResponse()
+	Try {
+		whr.WaitForResponse()
+		arr := whr.responseBody
+		pData := NumGet(ComObjValue(arr) + 8 + A_PtrSize)
+		length := arr.MaxIndex() + 1
 
-	arr := whr.responseBody
-	pData := NumGet(ComObjValue(arr) + 8 + A_PtrSize)
-	length := arr.MaxIndex() + 1
-
-	return StrGet(pData, length, "utf-8")
+		return StrGet(pData, length, "utf-8")
+	} Catch e {
+	}
+	return ""
 }
 
 ;UriEncode(Uri)
