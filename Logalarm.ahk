@@ -39,7 +39,7 @@ WinSet, TransColor, %CustomColor% 150
 ;Gosub, UpdateOSD  ; Make the first update immediate rather than waiting for the timer.
 Gui, 2:Show, x%left% y%top% w%width% h%height% NoActivate  ; NoActivate avoids deactivating the currently active window.
 
-reg1 := " : ([a-zA-Z가-힣\-]{1,12})-[a-zA-Z가-힣\-]{1,12}이 (차원 전류 동력기|자동 전류 방사포)에게서 [0-9,]+의 대미지를 받았습니다."
+Helper1RegexMsg := " : ([a-zA-Z가-힣\-]{1,12})-[a-zA-Z가-힣\-]{1,12}이 (차원 전류 동력기|자동 전류 방사포)에게서 [0-9,]+의 대미지를 받았습니다."
 
 UpdateOSD(str) {
     global Helper1DisplayTime
@@ -175,8 +175,8 @@ OnNewLineNormal(line){
     }
 }
 OnNewLineRegex(line){
-    global words, blackwords, Url, LastString, reg1, Helper1
-    if (1 == Helper1 && 0 < RegExMatch(line, reg1, result)) {
+    global words, blackwords, Url, LastString, Helper1RegexMsg, Helper1
+    if (1 == Helper1 && 0 < RegExMatch(line, Helper1RegexMsg, result)) {
         user := Trim(result1, " `t`r`n")
         UpdateOSD(user)
         return
