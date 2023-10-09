@@ -28,10 +28,10 @@ SysGet, MonitorWorkArea, MonitorWorkArea, %MonitorPrimary%
 left := 0
 width := MonitorRight
 top := MonitorBottom / 2 - (MonitorBottom * 0.3)
-height := MonitorBottom - top
+height := MonitorBottom - (top * 2.5)
 ;CustomColor = EEAA99  ; Can be any RGB color (it will be made transparent below).
 CustomColor = 000000
-Gui 2:+LastFound +AlwaysOnTop -Caption +ToolWindow  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
+Gui 2:+LastFound +AlwaysOnTop -Caption +ToolWindow +E0x08000000  ; +ToolWindow avoids a taskbar button and an alt-tab menu item.
 Gui, 2:Color, %CustomColor%
 Gui, 2:Font, s32  ; Set a large font size (32-point).
 Gui, 2:Add, Text, x%left% y%top% w%width% h%height% Center ym vOSDText cFF0000
@@ -39,7 +39,8 @@ WinSet, TransColor, %CustomColor% 150
 ;Gosub, UpdateOSD  ; Make the first update immediate rather than waiting for the timer.
 Gui, 2:Show, x%left% y%top% w%width% h%height% NoActivate  ; NoActivate avoids deactivating the currently active window.
 
-Helper1RegexMsg := " : ([a-zA-Z가-힣\-]{1,12})-[a-zA-Z가-힣\-]{1,12}이 (차원 전류 동력기|자동 전류 방사포)에게서 [0-9,]+의 대미지를 받았습니다."
+Helper1RegexMsg := "(차원 전류 동력기|자동 전류 방사포)에게서 [0-9,]+의 대미지를 받았습니다."
+Helper2RegexMsg := " : ([a-zA-Z가-힣\-]{1,12})-[a-zA-Z가-힣\-]{1,12}이 (차원 전류 동력기|자동 전류 방사포)에게서 [0-9,]+의 대미지를 받았습니다."
 
 UpdateOSD(str) {
     global Helper1DisplayTime
@@ -50,7 +51,6 @@ UpdateOSD(str) {
         str := str . "`n" . old
     }
     GuiControl,2:, OSDText, %str%
-    Gui, 2:Show, NoActivate
     SetTimer, RemoveOSD, %time%
 }
 
@@ -175,9 +175,12 @@ OnNewLineNormal(line){
     }
 }
 OnNewLineRegex(line){
-    global words, blackwords, Url, LastString, Helper1RegexMsg, Helper1
+    global words, blackwords, Url, LastString, Helper1RegexMsg, Helper2RegexMsg, Helper1
     if (1 == Helper1 && 0 < RegExMatch(line, Helper1RegexMsg, result)) {
-        user := Trim(result1, " `t`r`n")
+        user := "나"
+        if (0 < RegExMatch(line, Helper2RegexMsg, result)) {
+            user := Trim(result1, " `t`r`n")
+        }
         UpdateOSD(user)
         return
     }
@@ -214,6 +217,5 @@ ToolTip
 return
 
 RemoveOSD:
-;Gui 2:Hide
 GuiControl,2:, OSDText
 return
