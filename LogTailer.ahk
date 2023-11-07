@@ -5,15 +5,14 @@ class LogTailer {
     fileHandle := 0
     fileSize := 0
     checkInterval := 10
-    
+
     __New(FileName, Callback, checkInterval=10){
         this.fileName := FileName
         this.callback := callback
         this.checkInterval := checkInterval
         fileHandle := FileOpen(FileName, "r `n")
         if (!IsObject(fileHandle)){
-            MsgBox % "Unable to load file " FileName
-            ExitApp
+            throw "Unable to load file " . FileName
         }
         this.fileHandle := fileHandle
         this.fileSize := fileHandle.Length
@@ -22,7 +21,7 @@ class LogTailer {
         this.ReadFn := fn
         this.Start()
     }
-    
+
     Read(){
         if (this.fileHandle.Length < this.fileSize){
             ; File got smaller. Log rolled over. Reset to start
@@ -45,19 +44,19 @@ class LogTailer {
         ; Store length so we can detect roll over
         this.fileSize := this.fileHandle.Length
     }
-    
+
     ; Starts tailing
     Start(){
         fn := this.ReadFn
         SetTimer, % fn, % this.checkInterval
     }
-    
+
     ; Stops tailing
     Stop(){
         fn := this.ReadFn
         SetTimer, % fn, Off
     }
-    
+
     ; Stop tailing and close file handle
     Delete(){
         this.Stop()
