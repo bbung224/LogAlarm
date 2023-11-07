@@ -46,6 +46,7 @@ Helper1RegexMsg1 := "(차원 전류 동력기|자동 전류 방사포)에게서 
 Helper1RegexMsg2 := " : ([a-zA-Z가-힣\-]{1,12})-[a-zA-Z가-힣\-]{1,12}이 (차원 전류 동력기|자동 전류 방사포)에게서 [0-9,]+의 대미지를 받았습니다."
 Helper2RegexMsg1 := "비운의 사마엘: 간악한 데바들! 또 내 눈앞에 나타난 것이냐?"
 Helper2RegexMsg2 := "비운의 사마엘: 모두 쓸어버려주마!"
+Helper2RegexMsg3 := "비운의 사마엘: 아무것도 아닌 데바들에게... 아아..."
 Helper2Data1 := Object(1, "9시 흡수1/2", 20, "9시 흡수/1/2", 50, "12시 흡수/1/2", 80, "11시 1/2/1", 110, "11시 1/흡수/1 외부구체", 140, "11시 1/흡수/2 외부구체", 170, "강제전송/1/2", 200, "3시 흡수/1/2", 230, "6시 흡수/2/1", 260, "6시 흡수/1/2 전체구체", 290, "9시 흡수/1/2", 320, "흡수/2/1 내부구체", 350, "6시 1/2/1", 380, "6시 1/흡수/2", 400, "")
 Helper2Data2 := {}
 Helper2Data2[1] := "피뢰침 준비"
@@ -221,7 +222,7 @@ OnNewLineNormal(line){
 OnNewLineRegex(line){
     global words, blackwords, Url, LastString
     global Helper1RegexMsg1, Helper1RegexMsg2, Helper1, Helper1DisplayTime
-    global Helper2, Helper2RegexMsg1, Helper2RegexMsg2, Helper2DisplayTime, Helper2Phase
+    global Helper2, Helper2RegexMsg1, Helper2RegexMsg2, Helper2RegexMsg3, Helper2DisplayTime, Helper2Phase
     if (1 == Helper1 && 0 < RegExMatch(line, Helper1RegexMsg1, result)) {
         user := "나"
         if (0 < RegExMatch(line, Helper1RegexMsg2, result)) {
@@ -238,6 +239,12 @@ OnNewLineRegex(line){
         } else if (0 < RegExMatch(line, Helper2RegexMsg2, result)) {
             Helper2Phase := 2
             SetTimer, Helper2Lable2, -1
+        }
+
+        if (2 == Helper2Phase) {
+            if (0 < RegExMatch(line, Helper2RegexMsg3, result)) {
+                Helper2Phase := 0
+            }
         }
     }
 
